@@ -1,0 +1,26 @@
+ Sys.setenv(CENSUS_KEY="aea6c332df9ddb0336f18623eff1c3e8eec2fce1")
+> incometract16 <- getCensus(name = "acs/acs5", vintage = "2016", vars = "B19013_001E",
++                            region = "tract:*", regionin = "state:06+county:001,013,041,055,075,081,085,095,097")
+Warning message:
+In strptime(x, fmt, tz = "GMT") :
+  unknown timezone 'zone/tz/2018e.1.0/zoneinfo/America/Los_Angeles'
+> colnames(incometract16)[4] <- "Tract"
+> incomecounty16 <- getCensus(name = "acs/acs5", vintage = "2016", vars = "B19013_001E",
++                             region = "county:001,013,041,055,075,081,085,095,097", regionin = "state:06")
+> 
+> colnames(incomecounty16)[3] <- "County"
+> income <- incometract16 %>% select("county","Tract")
+> income$FIPS <- paste(incometract16$state,incometract16$county,incometract16$tract,sep="")
+> 
+> income <- income %>% left_join(incomecounty16 %>% select("county","County"), by = c("county" = "county"))
+> 
+> income$"Bay Area" <- 87000
+> income <- income %>% filter(Tract > 0)
+> write.csv(income, file = "income.csv")
+> View(income)
+> load("~/income.csv")
+Error: bad restore file magic number (file may be corrupted) -- no data loaded
+In addition: Warning message:
+file ‘income.csv’ has magic number '"","c'
+  Use of save versions prior to 2 is deprecated 
+> View(income)
